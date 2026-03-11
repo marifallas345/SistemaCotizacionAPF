@@ -11,7 +11,7 @@ namespace SistemaCotizacionAPF.Vistas
 {
 
 
-    public partial class Dashboard
+    public partial class HistorialCotizaciones
     {
 
         /// <summary>
@@ -24,21 +24,12 @@ namespace SistemaCotizacionAPF.Vistas
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
-        /// Control lblBienvenida.
+        /// Control gvHistorial.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblBienvenida;
-
-        /// <summary>
-        /// Control gvCotizaciones.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvCotizaciones;
+        protected global::System.Web.UI.WebControls.GridView gvHistorial;
     }
 }

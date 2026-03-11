@@ -3,13 +3,12 @@ using SistemaCotizacionAPF.Controladores;
 
 namespace SistemaCotizacionAPF.Vistas
 {
-    public partial class Dashboard : System.Web.UI.Page
+    public partial class HistorialCotizaciones : System.Web.UI.Page
     {
         private readonly CotizacionController _cotizacionController = new CotizacionController();
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Verifica si el usuario tiene sesión activa
             if (Session["IdUsuario"] == null)
             {
                 Response.Redirect("Login.aspx");
@@ -18,10 +17,8 @@ namespace SistemaCotizacionAPF.Vistas
 
             if (!IsPostBack)
             {
-                // Mostrar el nombre del usuario en el dashboard
-                string nombreUsuario = Session["NombreUsuario"]?.ToString();
-
-                lblBienvenida.Text = "Bienvenido al sistema, <b>" + nombreUsuario + "</b>";
+                gvHistorial.DataSource = _cotizacionController.ListarCotizaciones();
+                gvHistorial.DataBind();
             }
         }
     }

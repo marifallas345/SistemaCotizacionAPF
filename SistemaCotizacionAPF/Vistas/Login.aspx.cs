@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
+using SistemaCotizacionAPF.Controladores;
+using SistemaCotizacionAPF.Modelos;
 
 namespace SistemaCotizacionAPF.Vistas
 {
@@ -11,13 +8,27 @@ namespace SistemaCotizacionAPF.Vistas
     {
         protected void btnLogin_Click(object sender, EventArgs e)
         {
-            if (txtCorreo.Text == "admin@apf.com" && txtPassword.Text == "1234")
+            try
             {
-                Response.Redirect("Dashboard.aspx");
+                UsuarioController controlador = new UsuarioController();
+                Usuario usuario = controlador.Login(txtCorreo.Text.Trim(), txtPassword.Text.Trim());
+
+                if (usuario != null)
+                {
+                    Session["IdUsuario"] = usuario.IdUsuario;
+                    Session["NombreUsuario"] = usuario.NombreCompleto;
+                    Session["Rol"] = usuario.NombreRol;
+
+                    Response.Redirect("Dashboard.aspx");
+                }
+                else
+                {
+                    lblMensaje.Text = "Credenciales incorrectas.";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                lblMensaje.Text = "Credenciales incorrectas";
+                lblMensaje.Text = ex.ToString().Replace("\n", "<br/>").Replace("\r", "");
             }
         }
     }

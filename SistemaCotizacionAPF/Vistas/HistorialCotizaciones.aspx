@@ -1,10 +1,10 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="SistemaCotizacionAPF.Vistas.Dashboard" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="HistorialCotizaciones.aspx.cs" Inherits="SistemaCotizacionAPF.Vistas.HistorialCotizaciones" %>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Dashboard</title>
+    <title>Historial de Cotizaciones</title>
     <link href="../Estilos/Styles.css" rel="stylesheet" />
 </head>
 
@@ -23,26 +23,25 @@
             <a href="Login.aspx">Cerrar Sesión</a>
         </div>
 
-        <div class="container">
+        <div class="container container-wide">
 
             <div class="card">
-                <h2>Bienvenido</h2>
-                <asp:Label ID="lblBienvenida" runat="server" CssClass="bienvenida"></asp:Label>
+
+                <h2>Historial de Cotizaciones</h2>
+
+                <div class="table-container">
+
+                    <asp:GridView
+                        ID="gvHistorial"
+                        runat="server"
+                        AutoGenerateColumns="true"
+                        CssClass="grid-table">
+                    </asp:GridView>
+
+                </div>
+
             </div>
-
-            <div class="card">
-                <h2>Últimas Cotizaciones</h2>
-
-                <asp:GridView
-                    ID="gvCotizaciones"
-                    runat="server"
-                    AutoGenerateColumns="true">
-                </asp:GridView>
-
-            </div>
-
         </div>
-
     </form>
 </body>
 </html>
