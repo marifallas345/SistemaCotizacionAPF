@@ -8,6 +8,9 @@ namespace SistemaCotizacionAPF.Vistas
     {
         protected void btnLogin_Click(object sender, EventArgs e)
         {
+            lblMensaje.Text = string.Empty;
+            lblMensaje.CssClass = string.Empty;
+
             try
             {
                 UsuarioController controlador = new UsuarioController();
@@ -23,12 +26,14 @@ namespace SistemaCotizacionAPF.Vistas
                 }
                 else
                 {
+                    lblMensaje.CssClass = "mensaje-error";
                     lblMensaje.Text = "Credenciales incorrectas.";
                 }
             }
             catch (Exception ex)
             {
-                lblMensaje.Text = ex.ToString().Replace("\n", "<br/>").Replace("\r", "");
+                lblMensaje.CssClass = "mensaje-error";
+                lblMensaje.Text = ex.Message.Replace("\n", "<br/>").Replace("\r", "");
             }
         }
     }

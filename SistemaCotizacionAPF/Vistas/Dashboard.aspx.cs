@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using SistemaCotizacionAPF.Controladores;
 
 namespace SistemaCotizacionAPF.Vistas
@@ -9,7 +10,6 @@ namespace SistemaCotizacionAPF.Vistas
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Verifica si el usuario tiene sesión activa
             if (Session["IdUsuario"] == null)
             {
                 Response.Redirect("Login.aspx");
@@ -18,11 +18,24 @@ namespace SistemaCotizacionAPF.Vistas
 
             if (!IsPostBack)
             {
-                // Mostrar el nombre del usuario en el dashboard
-                string nombreUsuario = Session["NombreUsuario"]?.ToString();
+                string nombreUsuario = Session["NombreUsuario"] != null ? Session["NombreUsuario"].ToString() : "Usuario";
+                string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "Sin rol";
 
                 lblBienvenida.Text = "Bienvenido al sistema, <b>" + nombreUsuario + "</b>";
+                lblUsuarioActivo.Text = nombreUsuario;
+                lblRol.Text = rol;
+
+                CargarCotizaciones();
             }
+        }
+
+        private void CargarCotizaciones()
+        {
+            DataTable dt = _cotizacionController.ListarCotizaciones();
+            gvCotizaciones.DataSource = dt;
+            gvCotizaciones.DataBind();
+
+            lblTotalCotizaciones.Text = dt.Rows.Count.ToString();
         }
     }
 }

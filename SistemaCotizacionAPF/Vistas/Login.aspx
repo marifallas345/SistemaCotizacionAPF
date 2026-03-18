@@ -10,31 +10,36 @@
 </head>
 <body>
     <form id="form1" runat="server">
+
         <div class="header">
             Sistema de Cotización APF
         </div>
 
-        <div class="container">
+        <div class="login-wrapper">
             <div class="card form-center">
                 <h2>Iniciar Sesión</h2>
+                <p class="login-subtitle">Ingrese sus credenciales para acceder al sistema.</p>
 
-                <label for="txtCorreo">Correo</label>
-                <asp:TextBox ID="txtCorreo" runat="server"></asp:TextBox>
+                <div class="form-group">
+                    <label for="txtCorreo">Correo</label>
+                    <asp:TextBox ID="txtCorreo" runat="server" TextMode="Email"></asp:TextBox>
+                </div>
 
-                <label for="txtPassword">Contraseña</label>
-                <asp:TextBox ID="txtPassword" runat="server" TextMode="Password"></asp:TextBox>
+                <div class="form-group">
+                    <label for="txtPassword">Contraseña</label>
+                    <asp:TextBox ID="txtPassword" runat="server" TextMode="Password"></asp:TextBox>
+                </div>
 
                 <asp:Button ID="btnLogin"
                     runat="server"
                     Text="Ingresar"
-                    CssClass="btn-primary"
+                    CssClass="btn-primary btn-block"
                     OnClick="btnLogin_Click" />
 
-                <br /><br />
-
-                <asp:Label ID="lblMensaje" runat="server" CssClass="mensaje-error"></asp:Label>
+                <asp:Label ID="lblMensaje" runat="server"></asp:Label>
             </div>
         </div>
+
     </form>
 </body>
 </html>

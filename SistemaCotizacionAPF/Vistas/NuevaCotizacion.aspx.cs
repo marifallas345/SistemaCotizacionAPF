@@ -10,7 +10,6 @@ namespace SistemaCotizacionAPF.Vistas
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Verifica que exista una sesión activa
             if (Session["IdUsuario"] == null)
             {
                 Response.Redirect("Login.aspx");
@@ -23,9 +22,6 @@ namespace SistemaCotizacionAPF.Vistas
             }
         }
 
-        /// <summary>
-        /// Carga el catálogo de productos APF en el DropDownList.
-        /// </summary>
         private void CargarProductos()
         {
             ddlProducto.DataSource = _productoController.ListarProductos();
@@ -36,23 +32,16 @@ namespace SistemaCotizacionAPF.Vistas
             ddlProducto.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccione un producto", "0"));
         }
 
-        /// <summary>
-        /// Evento que calcula la cotización, guarda cliente, encabezado
-        /// y detalle mensual en la base de datos.
-        /// </summary>
         protected void btnCalcularGuardar_Click(object sender, EventArgs e)
         {
             try
             {
-                // Validación de selección de producto
                 if (ddlProducto.SelectedValue == "0")
                     throw new Exception("Debe seleccionar un producto.");
 
-                // Validación de tipo de cliente
                 if (string.IsNullOrWhiteSpace(ddlTipoCliente.SelectedValue))
                     throw new Exception("Debe seleccionar el tipo de cliente.");
 
-                // Conversión de datos numéricos
                 decimal monto;
                 int plazo;
                 int idProducto;
@@ -76,23 +65,19 @@ namespace SistemaCotizacionAPF.Vistas
                 if (plazo <= 0)
                     throw new Exception("El plazo debe ser mayor que cero.");
 
-                // Obtener tasa desde la base de datos
                 decimal tasa = _productoController.ObtenerTasa(idProducto, plazo);
 
                 if (tasa <= 0)
                     throw new Exception("No existe una tasa configurada para el producto y plazo seleccionados.");
 
-                // Determinar símbolo de moneda según el nombre del producto
                 string nombreProducto = ddlProducto.SelectedItem.Text;
                 string simbolo = nombreProducto.Contains("Dólar") ? "$" : "₡";
 
-                // Cálculo de intereses
                 decimal interesMensual = (monto * (tasa / 100m) / 360m) * 30m;
                 decimal interesBruto = interesMensual * plazo;
                 decimal impuestoMonto = interesBruto * 0.13m;
                 decimal interesNeto = interesBruto - impuestoMonto;
 
-                // Insertar cliente
                 int idCliente = _cotizacionController.InsertarCliente(
                     txtIdentificacion.Text.Trim(),
                     txtCliente.Text.Trim(),
@@ -101,10 +86,8 @@ namespace SistemaCotizacionAPF.Vistas
                     ddlTipoCliente.SelectedValue
                 );
 
-                // Generar número de cotización
                 int numeroCotizacion = new Random().Next(1000, 9999);
 
-                // Insertar encabezado de cotización
                 int idCotizacion = _cotizacionController.InsertarCotizacion(
                     numeroCotizacion,
                     idCliente,
@@ -119,7 +102,6 @@ namespace SistemaCotizacionAPF.Vistas
                     interesNeto
                 );
 
-                // Insertar detalle mensual
                 for (int mes = 1; mes <= plazo; mes++)
                 {
                     decimal impuestoMensual = interesMensual * 0.13m;
@@ -135,8 +117,7 @@ namespace SistemaCotizacionAPF.Vistas
                     );
                 }
 
-                // Mostrar resultado bonito
-                lblResultado.CssClass = "resultado-box";
+                lblResultado.CssClass = "mensaje-exito";
                 lblResultado.Text =
                     "<strong>Cotización guardada correctamente</strong><br/><br/>" +
                     "<strong>Número de cotización:</strong> " + numeroCotizacion + "<br/>" +
@@ -148,7 +129,6 @@ namespace SistemaCotizacionAPF.Vistas
                     "<strong>Impuesto:</strong> " + simbolo + " " + impuestoMonto.ToString("N2") + "<br/>" +
                     "<strong>Interés neto:</strong> " + simbolo + " " + interesNeto.ToString("N2");
 
-                // Limpiar formulario si quieres dejarlo listo para una nueva cotización
                 LimpiarFormulario();
             }
             catch (Exception ex)
@@ -158,9 +138,6 @@ namespace SistemaCotizacionAPF.Vistas
             }
         }
 
-        /// <summary>
-        /// Limpia los controles del formulario después de guardar.
-        /// </summary>
         private void LimpiarFormulario()
         {
             txtIdentificacion.Text = string.Empty;

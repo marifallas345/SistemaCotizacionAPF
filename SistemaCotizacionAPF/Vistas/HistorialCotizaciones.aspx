@@ -6,8 +6,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Historial de Cotizaciones</title>
     <link href="../Estilos/Styles.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
-
 <body>
 
     <form id="form1" runat="server">
@@ -23,24 +23,26 @@
             <a href="Login.aspx">Cerrar Sesión</a>
         </div>
 
-        <div class="container container-wide">
+        <div class="container">
 
             <div class="card">
-
                 <h2>Historial de Cotizaciones</h2>
 
-                <div class="table-container">
-
-                    <asp:GridView
-                        ID="gvHistorial"
+                <div class="table-responsive">
+                    <asp:GridView ID="gvHistorial"
                         runat="server"
                         AutoGenerateColumns="true"
-                        CssClass="grid-table">
+                        GridLines="None"
+                        EmptyDataText="No hay cotizaciones registradas.">
                     </asp:GridView>
-
                 </div>
 
+                <div class="button-group">
+                    <a href="Dashboard.aspx" class="btn-secondary">Volver al Dashboard</a>
+                    <a href="NuevaCotizacion.aspx" class="btn-primary">Ir a Nueva Cotización</a>
+                </div>
             </div>
+
         </div>
     </form>
 </body>
