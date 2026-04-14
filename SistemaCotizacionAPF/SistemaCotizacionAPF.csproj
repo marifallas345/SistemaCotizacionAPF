@@ -67,29 +67,41 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="BD\BaseDeDatos.sql" />
     <Content Include="Estilos\Styles.css" />
-    <Content Include="Vistas\Dashboard.aspx" />
+    <Content Include="Vistas\Cotizaciones.aspx" />
     <Content Include="Vistas\HistorialCotizaciones.aspx" />
     <Content Include="Vistas\Login.aspx" />
-    <Content Include="Vistas\NuevaCotizacion.aspx" />
+    <Content Include="Vistas\Clientes.aspx" />
+    <Content Include="Vistas\Plazos.aspx" />
+    <Content Include="Vistas\Productos.aspx" />
+    <Content Include="Vistas\RegistroUsuario.aspx" />
+    <Content Include="Vistas\Tasas.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BD\ConexionBD.cs" />
+    <Compile Include="BD\Conexion.cs" />
+    <Compile Include="Controladores\ClienteController.cs" />
     <Compile Include="Controladores\CotizacionController.cs" />
+    <Compile Include="Controladores\PlazoController.cs" />
     <Compile Include="Controladores\ProductoController.cs" />
+    <Compile Include="Controladores\TasaController.cs" />
     <Compile Include="Controladores\UsuarioController.cs" />
     <Compile Include="Modelos\Cliente.cs" />
     <Compile Include="Modelos\Cotizacion.cs" />
-    <Compile Include="Modelos\ProductoAPF.cs" />
+    <Compile Include="Modelos\DetalleCotizacion.cs" />
+    <Compile Include="Modelos\Plazo.cs" />
+    <Compile Include="Modelos\Producto.cs" />
+    <Compile Include="Modelos\Tasa.cs" />
     <Compile Include="Modelos\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Vistas\Dashboard.aspx.cs">
-      <DependentUpon>Dashboard.aspx</DependentUpon>
+    <Compile Include="Utilidad\Seguridad.cs" />
+    <Compile Include="Vistas\Cotizaciones.aspx.cs">
+      <DependentUpon>Cotizaciones.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Vistas\Dashboard.aspx.designer.cs">
-      <DependentUpon>Dashboard.aspx</DependentUpon>
+    <Compile Include="Vistas\Cotizaciones.aspx.designer.cs">
+      <DependentUpon>Cotizaciones.aspx</DependentUpon>
     </Compile>
     <Compile Include="Vistas\HistorialCotizaciones.aspx.cs">
       <DependentUpon>HistorialCotizaciones.aspx</DependentUpon>
@@ -105,12 +117,40 @@
     <Compile Include="Vistas\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Vistas\NuevaCotizacion.aspx.cs">
-      <DependentUpon>NuevaCotizacion.aspx</DependentUpon>
+    <Compile Include="Vistas\Clientes.aspx.cs">
+      <DependentUpon>Clientes.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Vistas\NuevaCotizacion.aspx.designer.cs">
-      <DependentUpon>NuevaCotizacion.aspx</DependentUpon>
+    <Compile Include="Vistas\Clientes.aspx.designer.cs">
+      <DependentUpon>Clientes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Plazos.aspx.cs">
+      <DependentUpon>Plazos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Vistas\Plazos.aspx.designer.cs">
+      <DependentUpon>Plazos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Productos.aspx.cs">
+      <DependentUpon>Productos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Vistas\Productos.aspx.designer.cs">
+      <DependentUpon>Productos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\RegistroUsuario.aspx.cs">
+      <DependentUpon>RegistroUsuario.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Vistas\RegistroUsuario.aspx.designer.cs">
+      <DependentUpon>RegistroUsuario.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Tasas.aspx.cs">
+      <DependentUpon>Tasas.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Vistas\Tasas.aspx.designer.cs">
+      <DependentUpon>Tasas.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

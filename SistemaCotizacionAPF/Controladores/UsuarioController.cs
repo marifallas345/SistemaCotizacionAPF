@@ -8,39 +8,60 @@ namespace SistemaCotizacionAPF.Controladores
 {
     public class UsuarioController
     {
-        private readonly ConexionBD _conexion = new ConexionBD();
+        private readonly Conexion conexion = new Conexion();
 
-        public Usuario Login(string correo, string contrasena)
+        public bool RegistrarUsuario(Usuario u, out string mensaje)
         {
-            using (SqlConnection cn = _conexion.ObtenerConexion())
+            mensaje = string.Empty;
+
+            try
             {
-                using (SqlCommand cmd = new SqlCommand("sp_LoginUsuario", cn))
+                using (SqlConnection cn = conexion.ObtenerConexion())
+                using (SqlCommand cmd = new SqlCommand("sp_registrar_usuario_nuevo", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Correo", correo);
-                    cmd.Parameters.AddWithValue("@Contrasena", contrasena);
+
+                    cmd.Parameters.AddWithValue("@id_rol", u.IdRol);
+                    cmd.Parameters.AddWithValue("@nombre_usuario", u.NombreUsuario);
+                    cmd.Parameters.AddWithValue("@nombre_completo", u.NombreCompleto);
+                    cmd.Parameters.AddWithValue("@correo", u.Correo);
+                    cmd.Parameters.AddWithValue("@contrasena", u.Contrasena);
+                    cmd.Parameters.AddWithValue("@telefono", string.IsNullOrWhiteSpace(u.Telefono) ? (object)DBNull.Value : u.Telefono);
+                    cmd.Parameters.AddWithValue("@usuario_creacion", "sistema");
 
                     cn.Open();
+                    int filas = cmd.ExecuteNonQuery();
 
-                    using (SqlDataReader dr = cmd.ExecuteReader())
-                    {
-                        if (dr.Read())
-                        {
-                            Usuario usuario = new Usuario
-                            {
-                                IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
-                                NombreCompleto = dr["NombreCompleto"].ToString(),
-                                Correo = dr["Correo"].ToString(),
-                                NombreRol = dr["NombreRol"].ToString()
-                            };
+                    mensaje = filas > 0
+                        ? "Usuario registrado correctamente."
+                        : "No se pudo registrar el usuario.";
 
-                            return usuario;
-                        }
-                    }
+                    return filas > 0;
                 }
             }
+            catch (Exception ex)
+            {
+                mensaje = "Error al registrar usuario: " + ex.Message;
+                return false;
+            }
+        }
 
-            return null;
+        public DataTable Login(string usuarioCorreo, string contrasena)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection cn = conexion.ObtenerConexion())
+            using (SqlCommand cmd = new SqlCommand("sp_login_usuario", cn))
+            using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@usuario_o_correo", usuarioCorreo);
+                cmd.Parameters.AddWithValue("@contrasena", contrasena);
+
+                da.Fill(dt);
+            }
+
+            return dt;
         }
     }
 }

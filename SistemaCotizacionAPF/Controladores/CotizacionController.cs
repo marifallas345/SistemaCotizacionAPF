@@ -1,110 +1,60 @@
-﻿using System;
+﻿using SistemaCotizacionAPF.BD;
+using SistemaCotizacionAPF.Modelos;
+using System;
 using System.Data;
 using System.Data.SqlClient;
-using SistemaCotizacionAPF.BD;
 
 namespace SistemaCotizacionAPF.Controladores
 {
     public class CotizacionController
     {
-        private readonly ConexionBD _conexion = new ConexionBD();
+        private readonly Conexion conexion = new Conexion();
 
-        public int InsertarCliente(string identificacion, string nombreCompleto, string telefono, string correo, string tipoCliente)
+        public bool CrearCotizacion(Cotizacion c, out string mensaje)
         {
-            using (SqlConnection cn = _conexion.ObtenerConexion())
+            mensaje = string.Empty;
+
+            try
             {
-                cn.Open();
-
-                // Verificar si el cliente ya existe por identificación
-                using (SqlCommand cmdBuscar = new SqlCommand("SELECT IdCliente FROM Clientes WHERE Identificacion = @Identificacion", cn))
-                {
-                    cmdBuscar.Parameters.AddWithValue("@Identificacion", identificacion);
-
-                    object resultado = cmdBuscar.ExecuteScalar();
-
-                    if (resultado != null)
-                    {
-                        return Convert.ToInt32(resultado);
-                    }
-                }
-
-                // Si no existe, se inserta
-                using (SqlCommand cmd = new SqlCommand("sp_InsertarCliente", cn))
-                {
-                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Identificacion", identificacion);
-                    cmd.Parameters.AddWithValue("@NombreCompleto", nombreCompleto);
-                    cmd.Parameters.AddWithValue("@Telefono", telefono);
-                    cmd.Parameters.AddWithValue("@Correo", correo);
-                    cmd.Parameters.AddWithValue("@TipoCliente", tipoCliente);
-
-                    return Convert.ToInt32(cmd.ExecuteScalar());
-                }
-            }
-        }
-
-        public int InsertarCotizacion(int numeroCotizacion, int idCliente, int idProducto, int idUsuario,
-            decimal monto, int plazoMeses, decimal tasaAnual, decimal impuestoPorcentaje,
-            decimal interesBruto, decimal impuestoMonto, decimal interesNeto)
-        {
-            using (SqlConnection cn = _conexion.ObtenerConexion())
-            {
-                using (SqlCommand cmd = new SqlCommand("sp_InsertarCotizacion", cn))
+                using (SqlConnection cn = conexion.ObtenerConexion())
+                using (SqlCommand cmd = new SqlCommand("sp_crear_cotizacion", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@NumeroCotizacion", numeroCotizacion);
-                    cmd.Parameters.AddWithValue("@IdCliente", idCliente);
-                    cmd.Parameters.AddWithValue("@IdProducto", idProducto);
-                    cmd.Parameters.AddWithValue("@IdUsuario", idUsuario);
-                    cmd.Parameters.AddWithValue("@Monto", monto);
-                    cmd.Parameters.AddWithValue("@PlazoMeses", plazoMeses);
-                    cmd.Parameters.AddWithValue("@TasaAnual", tasaAnual);
-                    cmd.Parameters.AddWithValue("@ImpuestoPorcentaje", impuestoPorcentaje);
-                    cmd.Parameters.AddWithValue("@InteresBruto", interesBruto);
-                    cmd.Parameters.AddWithValue("@ImpuestoMonto", impuestoMonto);
-                    cmd.Parameters.AddWithValue("@InteresNeto", interesNeto);
 
-                    cn.Open();
-                    return Convert.ToInt32(cmd.ExecuteScalar());
-                }
-            }
-        }
-
-        public void InsertarDetalleCotizacion(int idCotizacion, int numeroMes, decimal montoBase,
-            decimal interesBrutoMes, decimal impuestoMes, decimal interesNetoMes)
-        {
-            using (SqlConnection cn = _conexion.ObtenerConexion())
-            {
-                using (SqlCommand cmd = new SqlCommand("sp_InsertarDetalleCotizacion", cn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@IdCotizacion", idCotizacion);
-                    cmd.Parameters.AddWithValue("@NumeroMes", numeroMes);
-                    cmd.Parameters.AddWithValue("@MontoBase", montoBase);
-                    cmd.Parameters.AddWithValue("@InteresBrutoMes", interesBrutoMes);
-                    cmd.Parameters.AddWithValue("@ImpuestoMes", impuestoMes);
-                    cmd.Parameters.AddWithValue("@InteresNetoMes", interesNetoMes);
+                    cmd.Parameters.AddWithValue("@numero_cotizacion", c.NumeroCotizacion);
+                    cmd.Parameters.AddWithValue("@id_cliente", c.IdCliente);
+                    cmd.Parameters.AddWithValue("@id_usuario", c.IdUsuario);
+                    cmd.Parameters.AddWithValue("@id_producto", c.IdProducto);
+                    cmd.Parameters.AddWithValue("@id_plazo", c.IdPlazo);
+                    cmd.Parameters.AddWithValue("@id_tasa", c.IdTasa);
+                    cmd.Parameters.AddWithValue("@monto", c.Monto);
+                    cmd.Parameters.AddWithValue("@usuario_creacion", "usuario");
 
                     cn.Open();
                     cmd.ExecuteNonQuery();
+
+                    mensaje = "Cotización registrada correctamente.";
+                    return true;
                 }
+            }
+            catch (Exception ex)
+            {
+                mensaje = "Error al crear la cotización: " + ex.Message;
+                return false;
             }
         }
 
-        public DataTable ListarCotizaciones()
+        public DataTable HistorialPorUsuario(int idUsuario)
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection cn = _conexion.ObtenerConexion())
+            using (SqlConnection cn = conexion.ObtenerConexion())
+            using (SqlCommand cmd = new SqlCommand("sp_consultar_historial", cn))
+            using (SqlDataAdapter da = new SqlDataAdapter(cmd))
             {
-                using (SqlCommand cmd = new SqlCommand("sp_ListarCotizaciones", cn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
-                    {
-                        da.Fill(dt);
-                    }
-                }
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id_usuario", idUsuario);
+                da.Fill(dt);
             }
 
             return dt;

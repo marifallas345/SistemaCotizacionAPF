@@ -4,42 +4,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Login - Sistema APF</title>
-    <link href="../Estilos/Styles.css" rel="stylesheet"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link href="Estilos/Styles.css" rel="stylesheet" />
 </head>
 <body>
-    <form id="form1" runat="server">
+<form id="form1" runat="server">
+    <div class="contenedor">
+        <asp:Label ID="lblTitulo" runat="server" Text="Inicio de Sesión" CssClass="titulo"></asp:Label><br />
+        <asp:Label ID="lblUsuario" runat="server" Text="Usuario o correo"></asp:Label>
+        <asp:TextBox ID="txtUsuario" runat="server"></asp:TextBox><br />
 
-        <div class="header">
-            Sistema de Cotización APF
-        </div>
+        <asp:Label ID="lblContrasena" runat="server" Text="Contraseña"></asp:Label>
+        <asp:TextBox ID="txtContrasena" runat="server" TextMode="Password"></asp:TextBox><br />
 
-        <div class="login-wrapper">
-            <div class="card form-center">
-                <h2>Iniciar Sesión</h2>
-                <p class="login-subtitle">Ingrese sus credenciales para acceder al sistema.</p>
-
-                <div class="form-group">
-                    <label for="txtCorreo">Correo</label>
-                    <asp:TextBox ID="txtCorreo" runat="server" TextMode="Email"></asp:TextBox>
-                </div>
-
-                <div class="form-group">
-                    <label for="txtPassword">Contraseña</label>
-                    <asp:TextBox ID="txtPassword" runat="server" TextMode="Password"></asp:TextBox>
-                </div>
-
-                <asp:Button ID="btnLogin"
-                    runat="server"
-                    Text="Ingresar"
-                    CssClass="btn-primary btn-block"
-                    OnClick="btnLogin_Click" />
-
-                <asp:Label ID="lblMensaje" runat="server"></asp:Label>
-            </div>
-        </div>
-
-    </form>
+        <asp:Button ID="btnIngresar" runat="server" Text="Ingresar" OnClick="btnIngresar_Click" />
+        <asp:Button ID="btnRegistro" runat="server" Text="Registrarse" PostBackUrl="~/RegistroUsuario.aspx" />
+        <asp:Label ID="lblMensaje" runat="server" CssClass="mensaje"></asp:Label>
+    </div>
+</form>
 </body>
 </html>

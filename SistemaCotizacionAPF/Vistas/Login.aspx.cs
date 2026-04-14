@@ -1,39 +1,45 @@
-﻿using System;
-using SistemaCotizacionAPF.Controladores;
-using SistemaCotizacionAPF.Modelos;
+﻿using SistemaCotizacionAPF.Controladores;
+using SistemaCotizacionAPF.Utilidad;
+using System;
+using System.Data;
 
 namespace SistemaCotizacionAPF.Vistas
 {
     public partial class Login : System.Web.UI.Page
     {
-        protected void btnLogin_Click(object sender, EventArgs e)
-        {
-            lblMensaje.Text = string.Empty;
-            lblMensaje.CssClass = string.Empty;
+        private readonly UsuarioController controller = new UsuarioController();
 
+        protected void btnIngresar_Click(object sender, EventArgs e)
+        {
             try
             {
-                UsuarioController controlador = new UsuarioController();
-                Usuario usuario = controlador.Login(txtCorreo.Text.Trim(), txtPassword.Text.Trim());
+                string usuario = txtUsuario.Text.Trim();
+                string contrasena = Seguridad.EncriptarSHA256(txtContrasena.Text.Trim());
 
-                if (usuario != null)
+                if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(txtContrasena.Text))
                 {
-                    Session["IdUsuario"] = usuario.IdUsuario;
-                    Session["NombreUsuario"] = usuario.NombreCompleto;
-                    Session["Rol"] = usuario.NombreRol;
+                    lblMensaje.Text = "Debe ingresar el usuario y la contraseña.";
+                    return;
+                }
 
-                    Response.Redirect("Dashboard.aspx");
+                DataTable dt = controller.Login(usuario, contrasena);
+
+                if (dt.Rows.Count > 0)
+                {
+                    Session["IdUsuario"] = dt.Rows[0]["id_usuario"].ToString();
+                    Session["NombreUsuario"] = dt.Rows[0]["nombre_completo"].ToString();
+                    Session["Rol"] = dt.Rows[0]["nombre_rol"].ToString();
+
+                    Response.Redirect("~/Vistas/Clientes.aspx");
                 }
                 else
                 {
-                    lblMensaje.CssClass = "mensaje-error";
-                    lblMensaje.Text = "Credenciales incorrectas.";
+                    lblMensaje.Text = "Credenciales inválidas.";
                 }
             }
             catch (Exception ex)
             {
-                lblMensaje.CssClass = "mensaje-error";
-                lblMensaje.Text = ex.Message.Replace("\n", "<br/>").Replace("\r", "");
+                lblMensaje.Text = "Error al iniciar sesión: " + ex.Message;
             }
         }
     }
