@@ -6,7 +6,7 @@ using System.Data.SqlClient;
 
 namespace SistemaCotizacionAPF.Controladores
 {
-    public class ProductoController
+    public class ClienteController
     {
         private readonly Conexion conexion = new Conexion();
 
@@ -15,7 +15,7 @@ namespace SistemaCotizacionAPF.Controladores
             DataTable dt = new DataTable();
 
             using (SqlConnection cn = conexion.ObtenerConexion())
-            using (SqlCommand cmd = new SqlCommand("SELECT * FROM vw_productos_vigentes", cn))
+            using (SqlCommand cmd = new SqlCommand("SELECT * FROM vw_clientes_activos", cn))
             using (SqlDataAdapter da = new SqlDataAdapter(cmd))
             {
                 da.Fill(dt);
@@ -24,33 +24,34 @@ namespace SistemaCotizacionAPF.Controladores
             return dt;
         }
 
-        public bool Insertar(Producto p, out string mensaje)
+        public bool Insertar(Cliente c, out string mensaje)
         {
             mensaje = string.Empty;
 
             try
             {
                 using (SqlConnection cn = conexion.ObtenerConexion())
-                using (SqlCommand cmd = new SqlCommand("sp_insertar_producto", cn))
+                using (SqlCommand cmd = new SqlCommand("sp_insertar_cliente", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@id_moneda", p.IdMoneda);
-                    cmd.Parameters.AddWithValue("@codigo_producto", p.CodigoProducto);
-                    cmd.Parameters.AddWithValue("@nombre_producto", p.NombreProducto);
-                    cmd.Parameters.AddWithValue("@descripcion", p.Descripcion);
+                    cmd.Parameters.AddWithValue("@identificacion", c.Identificacion);
+                    cmd.Parameters.AddWithValue("@nombre_cliente", c.NombreCliente);
+                    cmd.Parameters.AddWithValue("@telefono", string.IsNullOrWhiteSpace(c.Telefono) ? (object)DBNull.Value : c.Telefono);
+                    cmd.Parameters.AddWithValue("@correo", string.IsNullOrWhiteSpace(c.Correo) ? (object)DBNull.Value : c.Correo);
+                    cmd.Parameters.AddWithValue("@id_usuario", (object)c.IdUsuario ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@usuario_creacion", "admin");
 
                     cn.Open();
                     cmd.ExecuteNonQuery();
 
-                    mensaje = "Producto insertado correctamente.";
+                    mensaje = "Cliente insertado correctamente.";
                     return true;
                 }
             }
             catch (Exception ex)
             {
-                mensaje = "Error al insertar producto: " + ex.Message;
+                mensaje = "Error al insertar cliente: " + ex.Message;
                 return false;
             }
         }
