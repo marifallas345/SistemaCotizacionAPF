@@ -91,7 +91,7 @@ namespace SistemaCotizacionAPF.Controladores
             }
         }
 
-        public DataTable ListarCotizaciones()
+        public DataTable ListarCotizaciones(int idUsuario, string rol)
         {
             DataTable dt = new DataTable();
 
@@ -100,6 +100,10 @@ namespace SistemaCotizacionAPF.Controladores
                 using (SqlCommand cmd = new SqlCommand("sp_ListarCotizaciones", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                    cmd.Parameters.AddWithValue("@NombreRol", rol);
+
                     using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                     {
                         da.Fill(dt);
@@ -109,5 +113,48 @@ namespace SistemaCotizacionAPF.Controladores
 
             return dt;
         }
+        public DataTable ObtenerCotizacionPorId(int idCotizacion)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection cn = _conexion.ObtenerConexion())
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_ObtenerCotizacionPorId", cn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@IdCotizacion", idCotizacion);
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
+        public DataTable ObtenerReporteCotizaciones(int idUsuario, string rol)
+        {
+            DataTable dt = new DataTable();
+
+            using (SqlConnection cn = _conexion.ObtenerConexion())
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_ReporteCotizaciones", cn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                    cmd.Parameters.AddWithValue("@NombreRol", rol);
+
+                    using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                    {
+                        da.Fill(dt);
+                    }
+                }
+            }
+
+            return dt;
+        }
+
     }
 }

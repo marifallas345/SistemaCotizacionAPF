@@ -21,6 +21,7 @@ namespace SistemaCotizacionAPF.Vistas
                     Session["IdUsuario"] = usuario.IdUsuario;
                     Session["NombreUsuario"] = usuario.NombreCompleto;
                     Session["Rol"] = usuario.NombreRol;
+                    Session["IdCliente"] = usuario.IdCliente;
 
                     Response.Redirect("Dashboard.aspx");
                 }
@@ -36,5 +37,12 @@ namespace SistemaCotizacionAPF.Vistas
                 lblMensaje.Text = ex.Message.Replace("\n", "<br/>").Replace("\r", "");
             }
         }
+
+        protected void btnRegistro_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("Registro.aspx");
+        }
+    
+    
     }
 }

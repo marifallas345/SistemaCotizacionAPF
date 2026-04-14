@@ -11,5 +11,7 @@ namespace SistemaCotizacionAPF.Modelos
         public string NombreCompleto { get; set; }
         public string Correo { get; set; }
         public string NombreRol { get; set; }
+
+        public int IdCliente { get; set; }
     }
 }

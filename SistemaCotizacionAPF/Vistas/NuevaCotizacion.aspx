@@ -31,34 +31,8 @@
                 <div class="two-columns">
 
                     <div class="left-column">
-                        <div class="form-group">
-                            <label for="txtIdentificacion">Identificación</label>
-                            <asp:TextBox ID="txtIdentificacion" runat="server"></asp:TextBox>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="txtCliente">Nombre del Cliente</label>
-                            <asp:TextBox ID="txtCliente" runat="server"></asp:TextBox>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="txtTelefono">Teléfono</label>
-                            <asp:TextBox ID="txtTelefono" runat="server"></asp:TextBox>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="txtCorreoCliente">Correo</label>
-                            <asp:TextBox ID="txtCorreoCliente" runat="server" TextMode="Email"></asp:TextBox>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="ddlTipoCliente">Tipo de Cliente</label>
-                            <asp:DropDownList ID="ddlTipoCliente" runat="server">
-                                <asp:ListItem Text="Seleccione una opción" Value=""></asp:ListItem>
-                                <asp:ListItem Text="FISICO" Value="FISICO"></asp:ListItem>
-                                <asp:ListItem Text="JURIDICO" Value="JURIDICO"></asp:ListItem>
-                            </asp:DropDownList>
-                        </div>
+                        
+                         
 
                         <div class="form-group">
                             <label for="ddlProducto">Producto</label>
@@ -93,6 +67,19 @@
                             <h3 class="text-center">Resultado de la Cotización</h3>
                             <asp:Label ID="lblResultado" runat="server" Text="Aquí se mostrará el resultado una vez realizada la cotización."></asp:Label>
                         </div>
+                        <div class="button-group mt-20">
+                        <asp:Button ID="btnPDF"
+                            runat="server"
+                            Text="Descargar PDF"
+                            CssClass="btn-primary"
+                            OnClick="btnPDF_Click" />
+
+                        <asp:Button ID="btnExcel"
+                            runat="server"
+                            Text="Descargar Excel"
+                            CssClass="btn-secondary"
+                            OnClick="btnExcel_Click" />
+                    </div>
                     </div>
 
                 </div>

@@ -31,7 +31,11 @@ namespace SistemaCotizacionAPF.Vistas
 
         private void CargarCotizaciones()
         {
-            DataTable dt = _cotizacionController.ListarCotizaciones();
+            int idUsuario = Convert.ToInt32(Session["IdUsuario"]);
+            string rol = Session["Rol"].ToString();
+
+            DataTable dt = _cotizacionController.ListarCotizaciones(idUsuario, rol);
+
             gvCotizaciones.DataSource = dt;
             gvCotizaciones.DataBind();
 

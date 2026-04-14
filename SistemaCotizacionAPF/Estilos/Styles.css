@@ -194,6 +194,9 @@ textarea {
     flex-wrap: wrap;
     margin-top: 16px;
 }
+.login-wrapper .button-group {
+    flex-direction: column;
+}
 
 /* GRID LAYOUTS */
 .dashboard-stats {
@@ -380,3 +383,24 @@ tr:hover {
         flex-direction: column;
     }
 }
+/* LOGIN - OPCION DE REGISTRO ABAJO */
+.
+.registro-link {
+    margin-top: 18px;
+    text-align: center;
+    width: 100%;
+}
+
+.link-registro {
+    display: inline-block;
+    color: #1693A5;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+    .link-registro:hover {
+        text-decoration: underline;
+        color: #127b8a;
+    }

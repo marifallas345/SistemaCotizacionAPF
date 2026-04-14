@@ -41,6 +41,19 @@
                     <a href="Dashboard.aspx" class="btn-secondary">Volver al Dashboard</a>
                     <a href="NuevaCotizacion.aspx" class="btn-primary">Ir a Nueva Cotización</a>
                 </div>
+                <div class="button-group">
+                    <asp:Button ID="btnPDFHistorial"
+                        runat="server"
+                        Text="Descargar PDF"
+                        CssClass="btn-primary"
+                        OnClick="btnPDFHistorial_Click" />
+
+                    <asp:Button ID="btnExcelHistorial"
+                        runat="server"
+                        Text="Descargar Excel"
+                        CssClass="btn-secondary"
+                        OnClick="btnExcelHistorial_Click" />
+                </div>
             </div>
 
         </div>

@@ -37,7 +37,15 @@
                     OnClick="btnLogin_Click" />
 
                 <asp:Label ID="lblMensaje" runat="server"></asp:Label>
-            </div>
+         
+             <div class="login-extra">
+            <asp:LinkButton ID="btnRegistro"
+                runat="server"
+                OnClick="btnRegistro_Click"
+                CssClass="link-registro">
+                ¿No tienes cuenta? Registrarse
+            </asp:LinkButton>
+        </div>
         </div>
 
     </form>

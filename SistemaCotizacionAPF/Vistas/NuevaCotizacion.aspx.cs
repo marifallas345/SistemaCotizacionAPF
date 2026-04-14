@@ -1,5 +1,8 @@
-﻿using System;
-using SistemaCotizacionAPF.Controladores;
+﻿using SistemaCotizacionAPF.Controladores;
+using System;
+using System.Data;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 
 namespace SistemaCotizacionAPF.Vistas
 {
@@ -36,16 +39,15 @@ namespace SistemaCotizacionAPF.Vistas
         {
             try
             {
+                // VALIDACIONES
                 if (ddlProducto.SelectedValue == "0")
                     throw new Exception("Debe seleccionar un producto.");
-
-                if (string.IsNullOrWhiteSpace(ddlTipoCliente.SelectedValue))
-                    throw new Exception("Debe seleccionar el tipo de cliente.");
 
                 decimal monto;
                 int plazo;
                 int idProducto;
                 int idUsuario;
+                int idCliente;
 
                 if (!decimal.TryParse(txtMonto.Text.Trim(), out monto))
                     throw new Exception("El monto ingresado no es válido.");
@@ -56,8 +58,11 @@ namespace SistemaCotizacionAPF.Vistas
                 if (!int.TryParse(ddlProducto.SelectedValue, out idProducto))
                     throw new Exception("El producto seleccionado no es válido.");
 
-                if (!int.TryParse(Session["IdUsuario"].ToString(), out idUsuario))
-                    throw new Exception("No se pudo identificar al usuario en sesión.");
+                if (!int.TryParse(Session["IdUsuario"]?.ToString(), out idUsuario))
+                    throw new Exception("No se pudo identificar el usuario en sesión.");
+
+                if (!int.TryParse(Session["IdCliente"]?.ToString(), out idCliente) || idCliente == 0)
+                    throw new Exception("El usuario no tiene un cliente asociado.");
 
                 if (monto <= 0)
                     throw new Exception("El monto debe ser mayor que cero.");
@@ -65,11 +70,13 @@ namespace SistemaCotizacionAPF.Vistas
                 if (plazo <= 0)
                     throw new Exception("El plazo debe ser mayor que cero.");
 
+                // OBTENER TASA
                 decimal tasa = _productoController.ObtenerTasa(idProducto, plazo);
 
                 if (tasa <= 0)
                     throw new Exception("No existe una tasa configurada para el producto y plazo seleccionados.");
 
+                // CÁLCULOS
                 string nombreProducto = ddlProducto.SelectedItem.Text;
                 string simbolo = nombreProducto.Contains("Dólar") ? "$" : "₡";
 
@@ -78,16 +85,10 @@ namespace SistemaCotizacionAPF.Vistas
                 decimal impuestoMonto = interesBruto * 0.13m;
                 decimal interesNeto = interesBruto - impuestoMonto;
 
-                int idCliente = _cotizacionController.InsertarCliente(
-                    txtIdentificacion.Text.Trim(),
-                    txtCliente.Text.Trim(),
-                    txtTelefono.Text.Trim(),
-                    txtCorreoCliente.Text.Trim(),
-                    ddlTipoCliente.SelectedValue
-                );
-
+                // GENERAR NÚMERO DE COTIZACIÓN
                 int numeroCotizacion = new Random().Next(1000, 9999);
 
+                // INSERTAR COTIZACIÓN
                 int idCotizacion = _cotizacionController.InsertarCotizacion(
                     numeroCotizacion,
                     idCliente,
@@ -102,6 +103,7 @@ namespace SistemaCotizacionAPF.Vistas
                     interesNeto
                 );
 
+                // INSERTAR DETALLE MENSUAL
                 for (int mes = 1; mes <= plazo; mes++)
                 {
                     decimal impuestoMensual = interesMensual * 0.13m;
@@ -117,6 +119,7 @@ namespace SistemaCotizacionAPF.Vistas
                     );
                 }
 
+                // RESULTADO
                 lblResultado.CssClass = "mensaje-exito";
                 lblResultado.Text =
                     "<strong>Cotización guardada correctamente</strong><br/><br/>" +
@@ -128,7 +131,7 @@ namespace SistemaCotizacionAPF.Vistas
                     "<strong>Interés bruto:</strong> " + simbolo + " " + interesBruto.ToString("N2") + "<br/>" +
                     "<strong>Impuesto:</strong> " + simbolo + " " + impuestoMonto.ToString("N2") + "<br/>" +
                     "<strong>Interés neto:</strong> " + simbolo + " " + interesNeto.ToString("N2");
-
+                Session["IdCotizacionGenerada"] = idCotizacion;
                 LimpiarFormulario();
             }
             catch (Exception ex)
@@ -140,18 +143,92 @@ namespace SistemaCotizacionAPF.Vistas
 
         private void LimpiarFormulario()
         {
-            txtIdentificacion.Text = string.Empty;
-            txtCliente.Text = string.Empty;
-            txtTelefono.Text = string.Empty;
-            txtCorreoCliente.Text = string.Empty;
-            txtMonto.Text = string.Empty;
-            txtPlazo.Text = string.Empty;
-
-            if (ddlTipoCliente.Items.Count > 0)
-                ddlTipoCliente.SelectedIndex = 0;
+            txtMonto.Text = "";
+            txtPlazo.Text = "";
 
             if (ddlProducto.Items.Count > 0)
                 ddlProducto.SelectedIndex = 0;
         }
+        protected void btnPDF_Click(object sender, EventArgs e)
+        {
+            if (Session["IdCotizacionGenerada"] == null)
+                return;
+
+            int idCotizacion = Convert.ToInt32(Session["IdCotizacionGenerada"]);
+
+            DataTable dt = _cotizacionController.ObtenerCotizacionPorId(idCotizacion);
+
+            if (dt.Rows.Count == 0)
+                return;
+
+            var row = dt.Rows[0];
+
+            string filePath = Server.MapPath("~/Reportes/Cotizacion.pdf");
+
+            using (var writer = new iText.Kernel.Pdf.PdfWriter(filePath))
+            {
+                using (var pdf = new iText.Kernel.Pdf.PdfDocument(writer))
+                {
+                    var document = new iText.Layout.Document(pdf);
+
+                    document.Add(new iText.Layout.Element.Paragraph("REPORTE DE COTIZACIÓN APF"));
+                    document.Add(new iText.Layout.Element.Paragraph("----------------------------------"));
+
+                    document.Add(new iText.Layout.Element.Paragraph("Número: " + row["NumeroCotizacion"]));
+                    document.Add(new iText.Layout.Element.Paragraph("Cliente: " + row["Cliente"]));
+                    document.Add(new iText.Layout.Element.Paragraph("Identificación: " + row["Identificacion"]));
+                    document.Add(new iText.Layout.Element.Paragraph("Correo: " + row["Correo"]));
+                    document.Add(new iText.Layout.Element.Paragraph("Producto: " + row["NombreProducto"]));
+                    document.Add(new iText.Layout.Element.Paragraph("Moneda: " + row["Moneda"]));
+                    document.Add(new iText.Layout.Element.Paragraph("Monto: " + row["Monto"]));
+                    document.Add(new iText.Layout.Element.Paragraph("Plazo: " + row["PlazoMeses"] + " meses"));
+                    document.Add(new iText.Layout.Element.Paragraph("Tasa: " + row["TasaAnual"] + "%"));
+                    document.Add(new iText.Layout.Element.Paragraph("Interés Bruto: " + row["InteresBruto"]));
+                    document.Add(new iText.Layout.Element.Paragraph("Impuesto: " + row["ImpuestoMonto"]));
+                    document.Add(new iText.Layout.Element.Paragraph("Interés Neto: " + row["InteresNeto"]));
+                    document.Add(new iText.Layout.Element.Paragraph("Fecha: " + row["FechaCotizacion"]));
+
+                    document.Close();
+                }
+            }
+
+            Response.ContentType = "application/pdf";
+            Response.AppendHeader("Content-Disposition", "attachment; filename=Cotizacion.pdf");
+            Response.TransmitFile(filePath);
+            Response.End();
+        }
+        protected void btnExcel_Click(object sender, EventArgs e)
+        {
+            if (Session["IdCotizacionGenerada"] == null)
+                return;
+
+            int idCotizacion = Convert.ToInt32(Session["IdCotizacionGenerada"]);
+
+            DataTable dt = _cotizacionController.ObtenerCotizacionPorId(idCotizacion);
+
+            Response.Clear();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment;filename=Cotizacion.xls");
+            Response.Charset = "";
+            Response.ContentType = "application/vnd.ms-excel";
+
+            System.IO.StringWriter sw = new System.IO.StringWriter();
+            System.Web.UI.HtmlTextWriter hw = new System.Web.UI.HtmlTextWriter(sw);
+
+            GridView gv = new GridView();
+            gv.DataSource = dt;
+            gv.DataBind();
+
+            gv.RenderControl(hw);
+
+            Response.Output.Write(sw.ToString());
+            Response.Flush();
+            Response.End();
+        }
+        public override void VerifyRenderingInServerForm(Control control)
+        {
+            // requerido para exportar a Excel
+        }
+
     }
 }
